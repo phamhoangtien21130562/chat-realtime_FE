@@ -1,4 +1,4 @@
-*{
+/* *{
     margin:0;
     padding:0;
     border:none;
@@ -69,4 +69,4 @@ input#submit {
 input#submit:hover{
 
     background: linear-gradient(to right, #fc466b, #3f5efb); 
-}
+} */
