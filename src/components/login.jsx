@@ -1,37 +1,92 @@
-import React from 'react';
-import '../assets/style/login.css'
+import { useState } from 'react';
+import { User, Lock, Eye, EyeOff, Mail } from 'lucide-react';
+ import '../assets/style/login.css'
+
 
 const LoginForm = () => {
+  const [showPassword, setShowPassword] = useState(false);
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log('Login attempt with:', { username, password });
+    // Add authentication logic here
+  };
+
   return (
-    <html>
-      <head>
-        <title>Đăng kí</title>
-        <link rel="stylesheet" href="login.css" />
-        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css?family=Merriweather:300,400,400i|Noto+Sans:400,400i,700" rel="stylesheet" />
-        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600" rel="stylesheet" />
-      </head>
-      <body>
-        <div className="to">
-          <div className="form">
+    <div className="login-page">
+      <div className="login-container">
+        <div className="login-card">
+          <div className="card-header">
             <h2>Đăng Nhập</h2>
-            <i className="fab fa-app-store-ios"></i>
-            <label style={{marginLeft: '-120px'}}>Tên đăng nhập</label>
-            <input type="text" name="hoten" />
-            <label style={{marginLeft: '-150px'}}>Mật Khẩu</label>
-            <input type="text" name="Pass" />	
-            <div className="button-container">
-              {/* Đăng ký button */}
-              <button type="button" onClick={() => { window.location.href='register.jsx'; }}>Đăng Ký</button>
-              {/* Quên mật khẩu button */}
-              <button type="button" onClick={() => { window.location.href='forgot_password.html'; }}>Quên Mật Khẩu</button>
+            <div className="icon-container">
+              <Mail className="mail-icon" />
             </div>
-            <input id="submit" type="submit" name="submit" value="Gửi" />
+          </div>
+          
+          <div>
+            <div className="form-group">
+              <div className="input-container">
+                <User className="input-icon" />
+                <input
+                  type="text"
+                  id="username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="Nhập email"
+                />
+              </div>
+            </div>
+            
+            <div className="form-group">
+              <div className="input-container">
+                <Lock className="input-icon" />
+                <input
+                  type={showPassword ? "text" : "password"}
+                  id="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="Nhập mật khẩu"
+                />
+                <div className="password-toggle" onClick={togglePasswordVisibility}>
+                  {showPassword ? <EyeOff /> : <Eye />}
+                </div>
+              </div>
+            </div>
+            
+            <button 
+              type="button" 
+              className="login-button"
+              onClick={handleSubmit}
+            >
+              Đăng Nhập
+            </button>
+            
+            <div className="links-container">
+              <span 
+                className="link" 
+                onClick={() => { window.location.href='register.jsx'; }}
+              >
+                Đăng Ký
+              </span>
+              
+              <span 
+                className="link" 
+                onClick={() => { window.location.href='forgot_password.html'; }}
+              >
+                Quên Mật Khẩu
+              </span>
+            </div>
           </div>
         </div>
-      </body>
-    </html>
+      </div>
+    </div>
   );
-}
+};
 
 export default LoginForm;
