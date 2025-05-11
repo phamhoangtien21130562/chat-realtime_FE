@@ -19,6 +19,15 @@ body{
     background-color: rgba(27, 17, 48, 0.46);
     border-radius: 12px;
     backdrop-filter: blur(0px) saturate(180%);
-    border: 5px solid rgba(255, 255, 255, 0.13);
     display: flex;
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        display: none;
+    }
+
+    .main-chat {
+        width: 100%;
+    }
 }

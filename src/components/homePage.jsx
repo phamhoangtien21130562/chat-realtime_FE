@@ -8,7 +8,7 @@ const HomePage = () => {
         <div className="App">
             <LeftSideBar/>
             <MainChat/>
-            <RightSideBar/>
+            {/*<RightSideBar/>*/}
         </div>
     )
 }
