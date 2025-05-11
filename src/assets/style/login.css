@@ -4,26 +4,26 @@
     padding: 0;
     box-sizing: border-box;
     font-family: 'Open Sans', sans-serif;
-  }
-  
-  /* Đặt style cho toàn bộ trang */
-  html, body {
+}
+
+/* Đặt style cho toàn bộ trang */
+html, body {
     height: 100%;
     width: 100%;
     margin: 0;
     padding: 0;
     overflow: hidden;
 
-  }
-  
-  /* Đặt lại style cho #root hoặc container chính */
-  #root, .App {
+}
+
+/* Đặt lại style cho #root hoặc container chính */
+#root, .App {
     height: 100%;
     width: 100%;
-  }
-  
-  /* Container trang đăng nhập chiếm toàn màn hình */
-  .login-page {
+}
+
+/* Container trang đăng nhập chiếm toàn màn hình */
+.login-page {
     width: 100%;
     height: 100vh;
     position: fixed;
@@ -36,20 +36,20 @@
     justify-content: center;
     align-items: center;
     z-index: 1000;
-  }
-  
-  /* Main container */
-  .login-container {
+}
+
+/* Main container */
+.login-container {
     display: flex;
     align-items: center;
     justify-content: center;
     width: 100%;
     height: 100%;
     background: linear-gradient(to right, #e6f7ff, #e6fffa);
-  }
-  
-  /* Login card */
-  .login-card {
+}
+
+/* Login card */
+.login-card {
     width: 100%;
     max-width: 400px;
     padding: 30px;
@@ -57,55 +57,55 @@
     background-color: white;
     border-radius: 12px;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-  }
-  
-  /* Card header */
-  .card-header {
+}
+
+/* Card header */
+.card-header {
     text-align: center;
     margin-bottom: 25px;
-  }
-  
-  .card-header h2 {
+}
+
+.card-header h2 {
     font-size: 24px;
     font-weight: 600;
     color: #333;
     margin-bottom: 20px;
-  }
-  
-  .icon-container {
+}
+
+.icon-container {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     width: 64px;
     height: 64px;
-    background-color:  1px salmon;
+    background-color: 1px salmon;
     border-radius: 50%;
     margin-bottom: 20px;
-  }
-  
-  .mail-icon {
+}
+
+.mail-icon {
     font-size: 28px;
-  }
-  
-  /* Form groups */
-  .form-group {
+}
+
+/* Form groups */
+.form-group {
     margin-bottom: 24px;
-  }
-  
-  .form-group label {
+}
+
+.form-group label {
     display: block;
     font-size: 14px;
     font-weight: 500;
     color: #4a5568;
     margin-bottom: 6px;
-  }
-  
-  /* Input container */
-  .input-container {
+}
+
+/* Input container */
+.input-container {
     position: relative;
-  }
-  
-  .input-container input {
+}
+
+.input-container input {
     width: 100%;
     padding: 12px 15px 12px 40px;
     border: none;
@@ -115,19 +115,19 @@
     font-size: 14px;
     outline: none;
     transition: border-color 0.2s, box-shadow 0.2s;
-  }
-  
-  .input-container input:focus {
+}
+
+.input-container input:focus {
     border-color: #2b6cb0;
     box-shadow: 0 2px 4px rgba(66, 153, 225, 0.1);
-  }
-  
-  .input-container input::placeholder {
+}
+
+.input-container input::placeholder {
     color: #a0aec0;
-  }
-  
-  /* Input icons */
-  .input-icon {
+}
+
+/* Input icons */
+.input-icon {
     position: absolute;
     left: 12px;
     top: 50%;
@@ -137,10 +137,10 @@
     align-items: center;
     pointer-events: none;
     font-size: 18px;
-  }
-  
-  /* Password toggle */
-  .password-toggle {
+}
+
+/* Password toggle */
+.password-toggle {
     position: absolute;
     right: 12px;
     top: 50%;
@@ -150,10 +150,10 @@
     display: flex;
     align-items: center;
     font-size: 18px;
-  }
-  
-  /* Login button */
-  .login-button {
+}
+
+/* Login button */
+.login-button {
     width: 100%;
     padding: 12px;
     background: linear-gradient(to right, #3182ce, #38b2ac);
@@ -164,44 +164,44 @@
     cursor: pointer;
     box-shadow: 0 4px 6px rgba(66, 153, 225, 0.2);
     transition: background 0.3s, transform 0.2s;
-  }
-  
-  .login-button:hover {
+}
+
+.login-button:hover {
     background: linear-gradient(to right, #2b6cb0, #319795);
     transform: translateY(-1px);
-  }
-  
-  .login-button:active {
+}
+
+.login-button:active {
     transform: translateY(1px);
-  }
-  
-  /* Links container */
-  .links-container {
+}
+
+/* Links container */
+.links-container {
     display: flex;
     justify-content: space-between;
     margin-top: 24px;
-  }
-  
-  .link {
+}
+
+.link {
     font-size: 14px;
     color: #3182ce;
     cursor: pointer;
     transition: color 0.2s;
-  }
-  
-  .link:hover {
+}
+
+.link:hover {
     color: #2b6cb0;
     text-decoration: underline;
-  }
-  
-  /* Responsive adjustments */
-  @media (max-width: 480px) {
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
     .login-card {
-      padding: 20px;
-      margin: 0 10px;
+        padding: 20px;
+        margin: 0 10px;
     }
-    
+
     .form-group {
-      margin-bottom: 20px;
+        margin-bottom: 20px;
     }
-  }
+}
