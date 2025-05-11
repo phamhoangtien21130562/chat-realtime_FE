@@ -1,21 +1,16 @@
-# Giai đoạn build
+# Step 1: Build app
 FROM node:18-alpine as build
-
 WORKDIR /app
-COPY package*.json ./
-RUN npm ci
-COPY . .
+COPY package.json ./
+COPY package-lock.json ./
+RUN npm install
+COPY . ./
 RUN npm run build
 
-# Giai đoạn production
+# Step 2: Serve app using Nginx
 FROM nginx:alpine
-
 COPY --from=build /app/build /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/conf.d/default.template
-
-# Khởi động với script để thay thế $PORT
-RUN echo 'envsubst \$PORT < /etc/nginx/conf.d/default.template > /etc/nginx/conf.d/default.conf && nginx -g "daemon off;"' > /docker-entrypoint.sh
-RUN chmod +x /docker-entrypoint.sh
-
-EXPOSE $PORT
-CMD ["/docker-entrypoint.sh"]
+# Copy default nginx config
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
