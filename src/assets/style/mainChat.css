@@ -239,6 +239,7 @@
     flex-direction: column;
     overflow: auto;
     gap: 20px;
+    background: #f0f3f8;
 }
 
 .mainChat .centerChat::-webkit-scrollbar {
