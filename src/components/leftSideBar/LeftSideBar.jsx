@@ -1,11 +1,11 @@
 import '../../assets/style/leftSideBar.css'
 import ChatList from "./ChatList";
-import UserInfo from "./UserInfo";
+// import UserInfo from "./UserInfo";
 
-const LeftSideBar = () => {
+const LeftSideBar = ({ userInfoComponent }) => {
     return(
         <div className='leftSideBar'>
-            <UserInfo/>
+            {userInfoComponent}
             <ChatList/>
         </div>
     )
