@@ -3,7 +3,7 @@ import EmojiPicker from "emoji-picker-react";
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import {useEffect, useRef, useState} from "react";
 
-const MainChat = () => {
+const MainChat = ({ avatar, name }) => {
     const [openEmoji, setOpenEmoji] = useState(false)
     const [emojiToText, setEmojiToText] = useState("")
 
@@ -22,9 +22,9 @@ const MainChat = () => {
             {/*Thanh hiển thị tên người dùng được chọn để tiến hành chat*/}
             <div className="topChat">
                 <div className="user">
-                    <img src="/img/avatar.jpg" alt="avatar" className="avatar"/>
+                    <img src={avatar || "/img/avatar.jpg"} alt="avatar" className="avatar"/>
                     <div className="texts">
-                        <span>OzuSus</span>
+                        <span>{name || 'User'}</span>
                         {/*<p>Helllo World</p>*/}
                     </div>
                 </div>
@@ -37,7 +37,7 @@ const MainChat = () => {
             </div>
             <div className="centerChat">
                 <div className="messages">
-                    <img src="/img/avatar.jpg" alt="avatar" className="avatar"/>
+                    <img src={avatar || "/img/avatar.jpg"} alt="avatar" className="avatar"/>
                     <div className="texts">
                         <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Blanditiis doloribus eius expedita
                             ipsum laborum magnam non repellendus reprehenderit unde velit. Ab distinctio doloribus fuga,
@@ -57,7 +57,7 @@ const MainChat = () => {
                     </div>
                 </div>
                 <div className="messages">
-                    <img src="/img/avatar.jpg" alt="avatar" className="avatar"/>
+                    <img src={avatar || "/img/avatar.jpg"} alt="avatar" className="avatar"/>
                     <div className="texts">
                         <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Blanditiis doloribus eius expedita
                             ipsum laborum magnam non repellendus reprehenderit unde velit. Ab distinctio doloribus fuga,
@@ -76,7 +76,7 @@ const MainChat = () => {
                     </div>
                 </div>
                 <div className="messages">
-                    <img src="/img/avatar.jpg" alt="avatar" className="avatar"/>
+                    <img src={avatar || "/img/avatar.jpg"} alt="avatar" className="avatar"/>
                     <div className="texts">
                         <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Blanditiis doloribus eius expedita
                             ipsum laborum magnam non repellendus reprehenderit unde velit. Ab distinctio doloribus fuga,
@@ -95,7 +95,7 @@ const MainChat = () => {
                     </div>
                 </div>
                 <div className="messages">
-                    <img src="/img/avatar.jpg" alt="avatar" className="avatar"/>
+                    <img src={avatar || "/img/avatar.jpg"} alt="avatar" className="avatar"/>
                     <div className="texts">
                         <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Blanditiis doloribus eius expedita
                             ipsum laborum magnam non repellendus reprehenderit unde velit. Ab distinctio doloribus fuga,

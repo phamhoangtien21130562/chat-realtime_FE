@@ -1,21 +1,49 @@
 import { useState } from 'react';
 import { User, Lock, Eye, EyeOff, Mail } from 'lucide-react';
- import '../assets/style/login.css'
+import axios from 'axios';
+import '../assets/style/login.css'
+import { useNavigate } from 'react-router-dom';
 
 
 const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [message, setMessage] = useState('');
+  const navigate = useNavigate();
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Login attempt with:', { username, password });
-    // Add authentication logic here
+    setMessage('');
+    try {
+      const response = await axios.post(
+        'http://localhost:8080/api/auth/login',
+        {
+          email: username,
+          password: password
+        },
+        {
+          withCredentials: true
+        }
+      );
+      setMessage(response.data.message || 'Đăng nhập thành công!');
+      // Lưu userId vào sessionStorage nếu có
+      if (response.data.data && response.data.data.id) {
+        sessionStorage.setItem('userId', response.data.data.id);
+        // Chuyển sang trang homepage
+        navigate('/homepage');
+      }
+    } catch (error) {
+      if (error.response) {
+        setMessage(error.response.data.message || 'Đăng nhập thất bại!');
+      } else {
+        setMessage('Không thể kết nối tới máy chủ!');
+      }
+    }
   };
 
   return (
@@ -66,6 +94,8 @@ const LoginForm = () => {
             >
               Đăng Nhập
             </button>
+            
+            {message && <div className="login-message">{message}</div>}
             
             <div className="links-container">
               <span 
