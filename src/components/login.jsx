@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { User, Lock, Eye, EyeOff, Mail } from 'lucide-react';
 import axios from 'axios';
 import '../assets/style/login.css'
+import callApi from '../service/callApi';
 import { useNavigate } from 'react-router-dom';
 
 
@@ -20,21 +21,10 @@ const LoginForm = () => {
     e.preventDefault();
     setMessage('');
     try {
-      const response = await axios.post(
-        'http://localhost:8080/api/auth/login',
-        {
-          email: username,
-          password: password
-        },
-        {
-          withCredentials: true
-        }
-      );
-      setMessage(response.data.message || 'Đăng nhập thành công!');
-      // Lưu userId vào sessionStorage nếu có
-      if (response.data.data && response.data.data.id) {
-        sessionStorage.setItem('userId', response.data.data.id);
-        // Chuyển sang trang homepage
+      const response = await callApi.authService.login(username, password);
+      setMessage(response.message || 'Đăng nhập thành công!');
+      if (response.data && response.data.id) {
+        sessionStorage.setItem('userId', response.data.id);
         navigate('/homepage');
       }
     } catch (error) {

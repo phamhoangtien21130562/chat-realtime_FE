@@ -1,23 +1,28 @@
-import '../assets/style/homePage.css'
+import '../assets/style/homePage.css';
 import LeftSideBar from "./leftSideBar/LeftSideBar";
 import MainChat from "./mainChat/MainChat";
 import RightSideBar from "./rightSideBar/RightSideBar";
 import { useEffect, useState } from 'react';
-import axios from 'axios';
 import UserInfo from "./leftSideBar/UserInfo";
+import callApi from '../service/callApi';
 
 const HomePage = () => {
     const [user, setUser] = useState(null);
 
     useEffect(() => {
-        const userId = sessionStorage.getItem('userId');
-        if (userId) {
-            axios.get(`http://localhost:8080/api/user?id=${userId}`, { withCredentials: true })
-                .then(res => {
-                    setUser(res.data.data);
-                })
-                .catch(() => setUser(null));
-        }
+        const fetchUserData = async () => {
+            const userId = sessionStorage.getItem('userId');
+            if (userId) {
+                try {
+                    const response = await callApi.userService.getUserById(userId);
+                    setUser(response.data);
+                } catch (error) {
+                    setUser(null);
+                }
+            }
+        };
+
+        fetchUserData();
     }, []);
 
     return (
@@ -26,6 +31,7 @@ const HomePage = () => {
             <MainChat avatar={user?.avatar} name={user?.name} />
             {/*<RightSideBar/>*/}
         </div>
-    )
-}
-export default HomePage
+    );
+};
+
+export default HomePage;
