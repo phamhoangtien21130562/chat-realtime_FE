@@ -1,143 +1,199 @@
 import '../../assets/style/mainChat.css'
 import EmojiPicker from "emoji-picker-react";
 import '@fortawesome/fontawesome-free/css/all.min.css';
-import {useEffect, useRef, useState} from "react";
+import { useEffect, useRef, useState } from "react";
+import SockJS from 'sockjs-client';
+import { Client } from '@stomp/stompjs';
 
-const MainChat = ({ avatar, name }) => {
-    const [openEmoji, setOpenEmoji] = useState(false)
-    const [emojiToText, setEmojiToText] = useState("")
+const MainChat = ({ avatar, name, currentUserId, recipientId }) => {
+    const [openEmoji, setOpenEmoji] = useState(false);
+    const [messageText, setMessageText] = useState("");
+    const [messages, setMessages] = useState([]);
+    const [stompClient, setStompClient] = useState(null);
+    const [connected, setConnected] = useState(false);
 
     const endRef = useRef(null);
+    
+    // Connect to WebSocket when component mounts
     useEffect(() => {
-        endRef.current?.scrollIntoView({behavior: "smooth"});
-    }, []);
+        connect();
+        // Load message history
+        loadMessages();
+        
+        return () => {
+            // Disconnect when component unmounts
+            if (stompClient) {
+                stompClient.deactivate();
+            }
+        };
+    }, [recipientId]);
+
+    // Auto-scroll to bottom when messages change
+    useEffect(() => {
+        endRef.current?.scrollIntoView({ behavior: "smooth" });
+    }, [messages]);
+
+    const connect = () => {
+        // Use full URL to backend WebSocket endpoint (adjust the port if needed)
+        const client = new Client({
+    brokerURL: 'ws://localhost:8080/ws/websocket', // CHÍNH XÁC là ws://
+    reconnectDelay: 5000,
+    debug: (str) => console.log(str),
+});
+
+        client.onConnect = () => {
+            setConnected(true);
+            
+            // Subscribe to personal queue for messages
+            client.subscribe(`/user/${currentUserId}/queue/messages`, onMessageReceived);
+            
+            console.log("Connected to WebSocket");
+        };
+
+        client.onStompError = (frame) => {
+            console.error('Broker reported error: ' + frame.headers['message']);
+            console.error('Additional details: ' + frame.body);
+        };
+
+        client.activate();
+        setStompClient(client);
+    };
+
+    const onMessageReceived = (payload) => {
+        const notification = JSON.parse(payload.body);
+        
+        if (notification.senderId === recipientId || notification.senderId === currentUserId) {
+            setMessages(prevMessages => [...prevMessages, {
+                id: notification.id,
+                senderId: notification.senderId,
+                recipientId: notification.recipientId,
+                content: notification.content,
+                timestamp: notification.timestamp
+            }]);
+        }
+    };
+
+    const loadMessages = async () => {
+        try {
+            // Use full URL to backend API (adjust the port if needed)
+            const response = await fetch('http://localhost:8080/messages');
+            const allMessages = await response.json();
+            
+            // Only show messages between current user and selected recipient
+            const conversationMessages = allMessages.filter(
+                msg => (msg.senderId === currentUserId && msg.recipientId === recipientId) || 
+                      (msg.senderId === recipientId && msg.recipientId === currentUserId)
+            );
+            
+            setMessages(conversationMessages);
+        } catch (error) {
+            console.error("Error loading messages:", error);
+        }
+    };
+
+    const sendMessage = () => {
+        if (messageText.trim() && stompClient && connected) {
+            const message = {
+                senderId: currentUserId,
+                recipientId: recipientId,
+                content: messageText,
+                timestamp: new Date()
+            };
+            
+            stompClient.publish({
+                destination: '/app/chat',
+                body: JSON.stringify(message)
+            });
+            
+            setMessageText("");
+        }
+    };
+
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter') {
+            sendMessage();
+        }
+    };
 
     const showEmoji = e => {
-        setEmojiToText(prev => prev + e.emoji);
-        setOpenEmoji(false)
+        setMessageText(prev => prev + e.emoji);
+        setOpenEmoji(false);
+    };
+
+    const formatTimestamp = (timestamp) => {
+        if (!timestamp) return '';
+        
+        const date = new Date(timestamp);
+        const now = new Date();
+        
+        // For today's messages, show time only
+        if (date.toDateString() === now.toDateString()) {
+            return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+        
+        // For older messages, show date and time
+        return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     };
 
     return (
         <div className='mainChat'>
-            {/*Thanh hiển thị tên người dùng được chọn để tiến hành chat*/}
+            {/* User info header */}
             <div className="topChat">
                 <div className="user">
                     <img src={avatar || "/img/avatar.jpg"} alt="avatar" className="avatar"/>
                     <div className="texts">
                         <span>{name || 'User'}</span>
-                        {/*<p>Helllo World</p>*/}
+                        <p>{connected ? 'Online' : 'Connecting...'}</p>
                     </div>
                 </div>
                 <div className="icon">
-                    {/*<img src="/img/phone.png" alt=""/>*/}
-                    {/*<img src="/img/video.png" alt=""/>*/}
-                    {/*<img src="/img/info.png" alt=""/>*/}
                     <i className="fa-solid fa-circle-info fa-xl" style={{color: '#333333'}}></i>
                 </div>
             </div>
+            
+            {/* Chat messages area */}
             <div className="centerChat">
-                <div className="messages">
-                    <img src={avatar || "/img/avatar.jpg"} alt="avatar" className="avatar"/>
-                    <div className="texts">
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Blanditiis doloribus eius expedita
-                            ipsum laborum magnam non repellendus reprehenderit unde velit. Ab distinctio doloribus fuga,
-                            nulla quos reiciendis sunt tempore tenetur?
-                        </p>
-                        <span>1 min ago</span>
+                {messages.map(msg => (
+                    <div 
+                        key={msg.id} 
+                        className={`messages ${msg.senderId === currentUserId ? 'own' : ''}`}
+                    >
+                        {msg.senderId !== currentUserId && (
+                            <img src={avatar || "/img/avatar.jpg"} alt="avatar" className="avatar"/>
+                        )}
+                        <div className="texts">
+                            <p>{msg.content}</p>
+                            <span>{formatTimestamp(msg.timestamp)}</span>
+                        </div>
                     </div>
-                </div>
-                {/*Nội dung chat*/}
-                <div className="messages own">
-                    <div className="texts">
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Blanditiis doloribus eius expedita
-                            ipsum laborum magnam non repellendus reprehenderit unde velit. Ab distinctio doloribus fuga,
-                            nulla quos reiciendis sunt tempore tenetur?
-                        </p>
-                        <span>1 min ago</span>
-                    </div>
-                </div>
-                <div className="messages">
-                    <img src={avatar || "/img/avatar.jpg"} alt="avatar" className="avatar"/>
-                    <div className="texts">
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Blanditiis doloribus eius expedita
-                            ipsum laborum magnam non repellendus reprehenderit unde velit. Ab distinctio doloribus fuga,
-                            nulla quos reiciendis sunt tempore tenetur?
-                        </p>
-                        <span>1 min ago</span>
-                    </div>
-                </div>
-                <div className="messages own">
-                    <div className="texts">
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Blanditiis doloribus eius expedita
-                            ipsum laborum magnam non repellendus reprehenderit unde velit. Ab distinctio doloribus fuga,
-                            nulla quos reiciendis sunt tempore tenetur?
-                        </p>
-                        <span>1 min ago</span>
-                    </div>
-                </div>
-                <div className="messages">
-                    <img src={avatar || "/img/avatar.jpg"} alt="avatar" className="avatar"/>
-                    <div className="texts">
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Blanditiis doloribus eius expedita
-                            ipsum laborum magnam non repellendus reprehenderit unde velit. Ab distinctio doloribus fuga,
-                            nulla quos reiciendis sunt tempore tenetur?
-                        </p>
-                        <span>1 min ago</span>
-                    </div>
-                </div>
-                <div className="messages own">
-                    <div className="texts">
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Blanditiis doloribus eius expedita
-                            ipsum laborum magnam non repellendus reprehenderit unde velit. Ab distinctio doloribus fuga,
-                            nulla quos reiciendis sunt tempore tenetur?
-                        </p>
-                        <span>1 min ago</span>
-                    </div>
-                </div>
-                <div className="messages">
-                    <img src={avatar || "/img/avatar.jpg"} alt="avatar" className="avatar"/>
-                    <div className="texts">
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Blanditiis doloribus eius expedita
-                            ipsum laborum magnam non repellendus reprehenderit unde velit. Ab distinctio doloribus fuga,
-                            nulla quos reiciendis sunt tempore tenetur?
-                        </p>
-                        <span>1 min ago</span>
-                    </div>
-                </div>
-                <div className="messages own">
-                    <div className="texts">
-                        <img
-                            src="https://static0.gamerantimages.com/wordpress/wp-content/uploads/2021/06/Subnautica-Sea-Dragon-1.jpg"
-                            alt=""/>
-
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Blanditiis doloribus eius expedita
-                            ipsum laborum magnam non repellendus reprehenderit unde velit. Ab distinctio doloribus fuga,
-                            nulla quos reiciendis sunt tempore tenetur?
-                        </p>
-                        <span>1 min ago</span>
-                    </div>
-                </div>
+                ))}
                 <div ref={endRef}></div>
             </div>
-            {/*Thanh nhập tin nhắn, gửi file ảnh và nút gửi*/}
+            
+            {/* Message input area */}
             <div className="bottomChat">
-                {/*<div className="icons">*/}
-                {/*    <img src="/img/img.png" alt=""/>*/}
-                {/*</div>*/}
-                <input type="text" placeholder="Write your message here"
-                       value={emojiToText} onChange={e => setEmojiToText(e.target.value)}
+                <input 
+                    type="text" 
+                    placeholder="Write your message here"
+                    value={messageText} 
+                    onChange={e => setMessageText(e.target.value)}
+                    onKeyPress={handleKeyPress}
                 />
-                {/*<div className="emoji">*/}
-                {/*    <img src="/img/emoji.png" alt=""*/}
-                {/*         onClick={() => setOpenEmoji((prev) => !prev)}*/}
-                {/*    />*/}
-                {/*    <div className="emojiPicker">*/}
-                {/*        <EmojiPicker open={openEmoji} onEmojiClick={showEmoji}/>*/}
-                {/*    </div>*/}
-                {/*</div>*/}
-                <button className="sendButton">Send</button>
+                <div className="emoji">
+                    <i 
+                        className="fa-regular fa-face-smile fa-xl" 
+                        onClick={() => setOpenEmoji((prev) => !prev)}
+                    ></i>
+                    {openEmoji && (
+                        <div className="emojiPicker">
+                            <EmojiPicker onEmojiClick={showEmoji}/>
+                        </div>
+                    )}
+                </div>
+                <button className="sendButton" onClick={sendMessage}>Send</button>
             </div>
         </div>
-    )
-}
-export default MainChat
+    );
+};
+
+export default MainChat;
