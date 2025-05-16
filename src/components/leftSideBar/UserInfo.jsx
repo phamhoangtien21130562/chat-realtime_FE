@@ -1,5 +1,4 @@
 import '../../assets/style/userInfo.css'
-
 const UserInfo = ({ avatar, name }) => {
     return(
         <div className='userInfo'>
