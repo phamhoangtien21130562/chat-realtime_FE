@@ -6,15 +6,7 @@ const ChatList = () => {
     const [addMode,setAddMode] = useState(false)
     return(
         <div className='chatList'>
-            {/*<div className="search">*/}
-            {/*    <div className="searchBar">*/}
-            {/*        /!*<img src="/img/search.png" alt=""/>*!/*/}
-            {/*        <i className="fa-solid fa-magnifying-glass fa-lg" style={{color: '#cc0f22'}}></i>*/}
-            {/*        <input type="text" placeholder='Search' style={{color: 'black'}}/>*/}
-            {/*    </div>*/}
-            {/*    /!*<img src={addMode ? "/img/minus.png" : "/img/plus.png"} alt="" className="add"*!/*/}
-            {/*    /!*     onClick={() => setAddMode((prev) => !prev)}/>*!/*/}
-            {/*</div>*/}
+
             <SearchBar />
             <div className="items">
                 <img src="/img/avatar.jpg" alt="avatar" className="avatar"/>
