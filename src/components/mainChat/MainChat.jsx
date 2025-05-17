@@ -73,23 +73,34 @@ const MainChat = ({ avatar, name, currentUserId, recipientId }) => {
         }
     };
 
+    // const loadMessages = async () => {
+    //     try {
+    //         // Use full URL to backend API (adjust the port if needed)
+    //         const response = await fetch('http://localhost:8080/messages');
+    //         const allMessages = await response.json();
+    //
+    //         // Only show messages between current user and selected recipient
+    //         const conversationMessages = allMessages.filter(
+    //             msg => (msg.senderId === currentUserId && msg.recipientId === recipientId) ||
+    //                   (msg.senderId === recipientId && msg.recipientId === currentUserId)
+    //         );
+    //
+    //         setMessages(conversationMessages);
+    //     } catch (error) {
+    //         console.error("Error loading messages:", error);
+    //     }
+    // };
+
     const loadMessages = async () => {
         try {
-            // Use full URL to backend API (adjust the port if needed)
-            const response = await fetch('http://localhost:8080/messages');
-            const allMessages = await response.json();
-            
-            // Only show messages between current user and selected recipient
-            const conversationMessages = allMessages.filter(
-                msg => (msg.senderId === currentUserId && msg.recipientId === recipientId) || 
-                      (msg.senderId === recipientId && msg.recipientId === currentUserId)
-            );
-            
-            setMessages(conversationMessages);
+            const response = await fetch(`http://localhost:8080/messages/history?senderId=${currentUserId}&recipientId=${recipientId}`);
+            const data = await response.json();
+            setMessages(data);
         } catch (error) {
             console.error("Error loading messages:", error);
         }
     };
+
 
     const sendMessage = () => {
         if (messageText.trim() && stompClient && connected) {
@@ -174,7 +185,7 @@ const MainChat = ({ avatar, name, currentUserId, recipientId }) => {
             <div className="bottomChat">
                 <input 
                     type="text" 
-                    placeholder="Write your message here"
+                    placeholder="Nhập tin nhắn"
                     value={messageText} 
                     onChange={e => setMessageText(e.target.value)}
                     onKeyPress={handleKeyPress}
@@ -190,7 +201,7 @@ const MainChat = ({ avatar, name, currentUserId, recipientId }) => {
                         </div>
                     )}
                 </div>
-                <button className="sendButton" onClick={sendMessage}>Send</button>
+                <button className="sendButton" onClick={sendMessage}>Gửi</button>
             </div>
         </div>
     );
