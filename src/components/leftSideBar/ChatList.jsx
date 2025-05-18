@@ -2,6 +2,7 @@ import '../../assets/style/chatList.css'
 import {useEffect, useRef, useState} from "react";
 import SearchBar from './SearchBar';
 import axios from 'axios';
+import callApi from "../../service/callApi";
 
 const ChatList = ({currentUserId}) => {
     const [rooms, setRooms] = useState([]);
@@ -38,7 +39,7 @@ const ChatList = ({currentUserId}) => {
                             ? room.recipientId
                             : room.senderId;
 
-                        const userData = await getUserById(otherUserId);
+                        const userData = await callApi.userService.getUserById(otherUserId);
 
                         return {
                             ...room,
