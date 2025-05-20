@@ -1,55 +1,39 @@
-import '../../assets/style/chatList.css'
-import {useEffect, useRef, useState} from "react";
+import {useEffect, useState} from 'react';
 import SearchBar from './SearchBar';
-import axios from 'axios';
 import callApi from "../../service/callApi";
+import '../../assets/style/chatList.css'
 
-const ChatList = ({currentUserId}) => {
+const ChatList = ({currentUserId, onRoomSelect}) => {
     const [rooms, setRooms] = useState([]);
 
-    // Hàm gọi API để lấy user theo id
-    const getUserById = async (id) => {
-        try {
-            const res = await axios.get(`/api/user`, {
-                params: {id},
-                withCredentials: true,
-            });
-            return res.data?.data;
-        } catch (err) {
-            console.error("Lỗi khi lấy user:", err);
-            return null;
-        }
-    };
-
-    // Gọi API lấy danh sách phòng chat
     useEffect(() => {
         if (!currentUserId) return;
 
+        /**
+         * UC3.1:Hiển thị danh sách cuộc trò chuyện
+         * Lấy ra danh sách room view:
+         * trong đó mỗi item sẽ lấy ra tên người dùng, avatar, tin nhắn cuối cùng, thời gian*/
         const fetchRooms = async () => {
             try {
-                const res = await axios.get(`/api/rooms/${currentUserId}`, {
-                    withCredentials: true
-                });
-                const rawRooms = res.data;
+                const roomsData = await callApi.roomService.getRoomsByUserId(currentUserId);
 
-                // Lấy thông tin người còn lại trong mỗi phòng
-                const enrichedRooms = await Promise.all(
-                    rawRooms.map(async (room) => {
-                        const otherUserId = room.senderId === currentUserId
-                            ? room.recipientId
-                            : room.senderId;
-
-                        const userData = await callApi.userService.getUserById(otherUserId);
-
+                const roomViews = await Promise.all(
+                    roomsData.map(async (room) => {
+                        const recipient = await callApi.userService.getUserById(room.recipientId);
+                        const recipientData = recipient?.data;
+                        console.log(recipient)
                         return {
-                            ...room,
-                            participantName: userData?.name || "Unknown",
-                            avatarUrl: userData?.avatarUrl || "/img/avatar.jpg"
+                            roomId: room.chatId,
+                            participantName: recipientData?.name || "Unknown",
+                            avatarUrl: recipientData?.avatar || "/img/avatar.jpg",
+                            lastMessageContent: room.lastMessage?.content || "",
+                            participantId: room.recipientId,
+                            timestamp: room.lastMessage?.timestamp || ""
                         };
                     })
                 );
-
-                setRooms(enrichedRooms);
+                console.log(roomViews);
+                setRooms(roomViews);
             } catch (err) {
                 console.error("Lỗi khi lấy danh sách phòng:", err);
             }
@@ -58,42 +42,35 @@ const ChatList = ({currentUserId}) => {
         fetchRooms();
     }, [currentUserId]);
 
-
-    useEffect(() => {
-        console.log("currentUserId:", currentUserId);
-    }, [currentUserId]);
-
-    useEffect(() => {
-        console.log("Danh sách rooms:", rooms);
-    }, [rooms]);
-
-    // if (!userId) {
-    //     return <div>Vui lòng đăng nhập</div>;
-    // }
-
     return (
-        <div className='chatList'>
+        <div className="chatList">
             <SearchBar/>
-            {rooms.map((room, index) => (
-                <div className="items" key={room.id || index}>
+            {/*3.3a: nếu không có cuộc trò truyện nào thì:
+            Hệ thống hiển thị thông báo “Bạn chưa có cuộc trò chuyện nào.”*/}
+            {rooms.length === 0 ? (
+                <p className="noConversation">Bạn chưa có cuộc trò chuyện nào</p>
+                ) :
+                (rooms.map((room, index) => (
+                <div className="items" key={room.participantId || index}
+                     onClick={() => onRoomSelect(room.roomId)} //khi click vào thì truyền roomid vào mainchat
+                >
                     <img src={room.avatarUrl} alt="avatar" className="avatar"/>
-                    <div className="texts">
-                        <span>{room.participantName}</span>
-                        <p>{room.lastMessage?.content || "..."}</p>
+                    <div className="content">
+                        <div className="header">
+                            <span className="name">{room.participantName}</span>
+                            <span className="timestamp">
+                                {room.timestamp ? new Date(room.timestamp).toLocaleTimeString([], {
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                }) : ''}
+                            </span>
+                        </div>
+                        <p className="lastMessage">{room.lastMessageContent}</p>
                     </div>
                 </div>
-            ))}
-
-
-            {/*<div className="items">*/}
-            {/*    <img src="/img/avatar.jpg" alt="avatar" className="avatar"/>*/}
-            {/*    <div className="texts">*/}
-            {/*        <span>OzuSus</span>*/}
-            {/*        <p>Hello World</p>*/}
-            {/*    </div>*/}
-            {/*</div>*/}
+            )))}
         </div>
     );
 };
-export default ChatList
 
+export default ChatList;

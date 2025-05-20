@@ -1,11 +1,11 @@
 import '../../assets/style/mainChat.css'
 import EmojiPicker from "emoji-picker-react";
 import '@fortawesome/fontawesome-free/css/all.min.css';
-import { useEffect, useRef, useState } from "react";
+import {useEffect, useRef, useState} from "react";
 import SockJS from 'sockjs-client';
-import { Client } from '@stomp/stompjs';
+import {Client} from '@stomp/stompjs';
 
-const MainChat = ({ avatar, name, currentUserId, recipientId }) => {
+const MainChat = ({avatar, name, currentUserId, recipientId, roomId}) => {
     const [openEmoji, setOpenEmoji] = useState(false);
     const [messageText, setMessageText] = useState("");
     const [messages, setMessages] = useState([]);
@@ -13,13 +13,13 @@ const MainChat = ({ avatar, name, currentUserId, recipientId }) => {
     const [connected, setConnected] = useState(false);
 
     const endRef = useRef(null);
-    
+
     // Connect to WebSocket when component mounts
     useEffect(() => {
         connect();
         // Load message history
         loadMessages();
-        
+
         return () => {
             // Disconnect when component unmounts
             if (stompClient) {
@@ -30,23 +30,23 @@ const MainChat = ({ avatar, name, currentUserId, recipientId }) => {
 
     // Auto-scroll to bottom when messages change
     useEffect(() => {
-        endRef.current?.scrollIntoView({ behavior: "smooth" });
+        endRef.current?.scrollIntoView({behavior: "smooth"});
     }, [messages]);
 
     const connect = () => {
         // Use full URL to backend WebSocket endpoint (adjust the port if needed)
         const client = new Client({
-    brokerURL: 'ws://localhost:8080/ws/websocket', // CHÍNH XÁC là ws://
-    reconnectDelay: 5000,
-    debug: (str) => console.log(str),
-});
+            brokerURL: 'ws://localhost:8080/ws/websocket', // CHÍNH XÁC là ws://
+            reconnectDelay: 5000,
+            debug: (str) => console.log(str),
+        });
 
         client.onConnect = () => {
             setConnected(true);
-            
+
             // Subscribe to personal queue for messages
             client.subscribe(`/user/${currentUserId}/queue/messages`, onMessageReceived);
-            
+
             console.log("Connected to WebSocket");
         };
 
@@ -61,7 +61,7 @@ const MainChat = ({ avatar, name, currentUserId, recipientId }) => {
 
     const onMessageReceived = (payload) => {
         const notification = JSON.parse(payload.body);
-        
+
         if (notification.senderId === recipientId || notification.senderId === currentUserId) {
             setMessages(prevMessages => [...prevMessages, {
                 id: notification.id,
@@ -90,7 +90,12 @@ const MainChat = ({ avatar, name, currentUserId, recipientId }) => {
     //         console.error("Error loading messages:", error);
     //     }
     // };
-
+    /**
+     * Usecase 3: Lịch sử trò chuyện
+     * U3.2: Hiển thị tin nhắn cũ
+     * load messages dựa trên chatId
+     * chatId dượcd truyền từ ChatList khi người dùng click vào 1 đoạn hội thoại bất kì
+     */
     const loadMessages = async () => {
         try {
             const response = await fetch(`http://localhost:8080/messages/history?senderId=${currentUserId}&recipientId=${recipientId}`);
@@ -110,12 +115,12 @@ const MainChat = ({ avatar, name, currentUserId, recipientId }) => {
                 content: messageText,
                 timestamp: new Date()
             };
-            
+
             stompClient.publish({
                 destination: '/app/chat',
                 body: JSON.stringify(message)
             });
-            
+
             setMessageText("");
         }
     };
@@ -133,17 +138,17 @@ const MainChat = ({ avatar, name, currentUserId, recipientId }) => {
 
     const formatTimestamp = (timestamp) => {
         if (!timestamp) return '';
-        
+
         const date = new Date(timestamp);
         const now = new Date();
-        
+
         // For today's messages, show time only
         if (date.toDateString() === now.toDateString()) {
-            return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            return date.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
         }
-        
+
         // For older messages, show date and time
-        return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
     };
 
     return (
@@ -161,12 +166,12 @@ const MainChat = ({ avatar, name, currentUserId, recipientId }) => {
                     <i className="fa-solid fa-circle-info fa-xl" style={{color: '#333333'}}></i>
                 </div>
             </div>
-            
+
             {/* Chat messages area */}
             <div className="centerChat">
                 {messages.map(msg => (
-                    <div 
-                        key={msg.id} 
+                    <div
+                        key={msg.id}
                         className={`messages ${msg.senderId === currentUserId ? 'own' : ''}`}
                     >
                         {msg.senderId !== currentUserId && (
@@ -180,19 +185,19 @@ const MainChat = ({ avatar, name, currentUserId, recipientId }) => {
                 ))}
                 <div ref={endRef}></div>
             </div>
-            
+
             {/* Message input area */}
             <div className="bottomChat">
-                <input 
-                    type="text" 
+                <input
+                    type="text"
                     placeholder="Nhập tin nhắn"
-                    value={messageText} 
+                    value={messageText}
                     onChange={e => setMessageText(e.target.value)}
                     onKeyPress={handleKeyPress}
                 />
                 <div className="emoji">
-                    <i 
-                        className="fa-regular fa-face-smile fa-xl" 
+                    <i
+                        className="fa-regular fa-face-smile fa-xl"
                         onClick={() => setOpenEmoji((prev) => !prev)}
                     ></i>
                     {openEmoji && (

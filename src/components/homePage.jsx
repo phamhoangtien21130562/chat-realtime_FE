@@ -8,6 +8,7 @@ import callApi from '../service/callApi';
 
 const HomePage = () => {
     const [user, setUser] = useState(null);
+    const [selectedRoomId, setSelectedRoomId] = useState(null);
 
     useEffect(() => {
         const fetchUserData = async () => {
@@ -27,8 +28,11 @@ const HomePage = () => {
 
     return (
         <div className="App">
-            <LeftSideBar userInfoComponent={<UserInfo avatar={user?.avatar} name={user?.name} />} currentUserId={sessionStorage.getItem('userId')} />
-            <MainChat avatar={user?.avatar} name={user?.name} />
+            <LeftSideBar userInfoComponent={<UserInfo avatar={user?.avatar} name={user?.name} />}
+                         currentUserId={sessionStorage.getItem('userId')}
+                         onRoomSelect={setSelectedRoomId} //truyền callback xuống LeftSideBar
+            />
+            <MainChat avatar={user?.avatar} name={user?.name} roomId={selectedRoomId}/>
             {/*<RightSideBar/>*/}
         </div>
     );
