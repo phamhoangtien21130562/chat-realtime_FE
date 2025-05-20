@@ -4,7 +4,7 @@ import api from './api';
 const authService = {
     login: async (email, password) => {
         try {
-            const response = await api.post('/auth/login', { email, password });
+            const response = await api.post('/api/auth/login', { email, password });
             return response.data;
         } catch (error) {
             throw error;
@@ -15,7 +15,7 @@ const authService = {
 const userService = {
     getUserById: async (userId) => {
         try {
-            const response = await api.get(`/user?id=${userId}`);
+            const response = await api.get(`/api/user?id=${userId}`);
             return response.data;
         } catch (error) {
             throw error;
