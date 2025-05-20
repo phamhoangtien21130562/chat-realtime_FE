@@ -38,7 +38,7 @@ const MainChat = ({ avatar, name, currentUserId, recipientId }) => {
      // FLOW 2.1.1: Thiết lập kết nối WebSocket với server
     const connect = () => {
     const client = new Client({
-    brokerURL: 'wss://https://chat-realtime-fe.onrender.com/ws/websocket', 
+    brokerURL: 'wss://https://sorfware-message.onrender.com/ws/websocket', 
     reconnectDelay: 5000,
     debug: (str) => console.log(str),
 });
