@@ -27,7 +27,7 @@ const HomePage = () => {
 
     return (
         <div className="App">
-            <LeftSideBar userInfoComponent={<UserInfo avatar={user?.avatar} name={user?.name} />} />
+            <LeftSideBar userInfoComponent={<UserInfo avatar={user?.avatar} name={user?.name} />} currentUserId={user?.id} />
             <MainChat avatar={user?.avatar} name={user?.name} />
             {/*<RightSideBar/>*/}
         </div>

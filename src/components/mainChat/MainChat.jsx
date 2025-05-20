@@ -1,3 +1,4 @@
+// FLOW 1: KHỞI TẠO KẾT NỐI WEBSOCKET
 import '../../assets/style/mainChat.css'
 import EmojiPicker from "emoji-picker-react";
 import '@fortawesome/fontawesome-free/css/all.min.css';
@@ -28,23 +29,24 @@ const MainChat = ({ avatar, name, currentUserId, recipientId }) => {
         };
     }, [recipientId]);
 
-    // Auto-scroll to bottom when messages change
+   
+    // FLOW 2.6.3:  Hiển thị tin nhắn -  Auto-scroll đến tin nhắn mới nhất
     useEffect(() => {
         endRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [messages]);
 
+     // FLOW 2.1.1: Thiết lập kết nối WebSocket với server
     const connect = () => {
-        // Use full URL to backend WebSocket endpoint (adjust the port if needed)
-        const client = new Client({
-    brokerURL: 'ws://localhost:8080/ws/websocket', // CHÍNH XÁC là ws://
+    const client = new Client({
+    brokerURL: 'ws://localhost:8080/ws/websocket', 
     reconnectDelay: 5000,
     debug: (str) => console.log(str),
 });
-
+    // FLOW 2.1.1: Xử lý sự kiện kết nối thành công
         client.onConnect = () => {
             setConnected(true);
             
-            // Subscribe to personal queue for messages
+            // FLOW 1.2: Đăng ký kênh cá nhân để nhận tin nhắn
             client.subscribe(`/user/${currentUserId}/queue/messages`, onMessageReceived);
             
             console.log("Connected to WebSocket");
@@ -58,12 +60,14 @@ const MainChat = ({ avatar, name, currentUserId, recipientId }) => {
         client.activate();
         setStompClient(client);
     };
-
+    // FLOW 2.6: Nhận tin nhắn từ WebSocket
+     // FLOW 2.6.1: Nhận thông báo từ WebSocket
     const onMessageReceived = (payload) => {
         const notification = JSON.parse(payload.body);
-        
+         // FLOW 2.6.2: Kiểm tra tin nhắn thuộc conversation hiện tại
         if (notification.senderId === recipientId || notification.senderId === currentUserId) {
             setMessages(prevMessages => [...prevMessages, {
+                 // FLOW 2.6.3: Thêm tin nhắn mới vào state và hiển thị
                 id: notification.id,
                 senderId: notification.senderId,
                 recipientId: notification.recipientId,
@@ -73,48 +77,62 @@ const MainChat = ({ avatar, name, currentUserId, recipientId }) => {
         }
     };
 
+    // const loadMessages = async () => {
+    //     try {
+    //         // Use full URL to backend API (adjust the port if needed)
+    //         const response = await fetch('http://localhost:8080/messages');
+    //         const allMessages = await response.json();
+    //
+    //         // Only show messages between current user and selected recipient
+    //         const conversationMessages = allMessages.filter(
+    //             msg => (msg.senderId === currentUserId && msg.recipientId === recipientId) ||
+    //                   (msg.senderId === recipientId && msg.recipientId === currentUserId)
+    //         );
+    //
+    //         setMessages(conversationMessages);
+    //     } catch (error) {
+    //         console.error("Error loading messages:", error);
+    //     }
+    // };
+
     const loadMessages = async () => {
         try {
-            // Use full URL to backend API (adjust the port if needed)
-            const response = await fetch('http://localhost:8080/messages');
-            const allMessages = await response.json();
-            
-            // Only show messages between current user and selected recipient
-            const conversationMessages = allMessages.filter(
-                msg => (msg.senderId === currentUserId && msg.recipientId === recipientId) || 
-                      (msg.senderId === recipientId && msg.recipientId === currentUserId)
-            );
-            
-            setMessages(conversationMessages);
+            const response = await fetch(`http://localhost:8080/messages/history?senderId=${currentUserId}&recipientId=${recipientId}`);
+            const data = await response.json();
+            setMessages(data);
         } catch (error) {
             console.error("Error loading messages:", error);
         }
     };
 
+
+    // FLOW 2.3: Gửi tin nhắn đến server
     const sendMessage = () => {
         if (messageText.trim() && stompClient && connected) {
+             // FLOW 2.3.1: Tạo đối tượng Message
             const message = {
                 senderId: currentUserId,
                 recipientId: recipientId,
                 content: messageText,
                 timestamp: new Date()
             };
-            
+             
+            // FLOW 2.3.2: Gửi tin nhắn đến endpoint "/app/chat" thông qua WebSocket
             stompClient.publish({
                 destination: '/app/chat',
                 body: JSON.stringify(message)
             });
-            
+            // Xóa nội dung input sau khi gửi
             setMessageText("");
         }
     };
-
+// Xử lý khi người dùng nhấn Enter để gửi tin nhắn
     const handleKeyPress = (e) => {
         if (e.key === 'Enter') {
             sendMessage();
         }
     };
-
+  // Xử lý khi người dùng chọn emoji
     const showEmoji = e => {
         setMessageText(prev => prev + e.emoji);
         setOpenEmoji(false);
@@ -174,7 +192,7 @@ const MainChat = ({ avatar, name, currentUserId, recipientId }) => {
             <div className="bottomChat">
                 <input 
                     type="text" 
-                    placeholder="Write your message here"
+                    placeholder="Nhập tin nhắn"
                     value={messageText} 
                     onChange={e => setMessageText(e.target.value)}
                     onKeyPress={handleKeyPress}
@@ -190,7 +208,7 @@ const MainChat = ({ avatar, name, currentUserId, recipientId }) => {
                         </div>
                     )}
                 </div>
-                <button className="sendButton" onClick={sendMessage}>Send</button>
+                <button className="sendButton" onClick={sendMessage}>Gửi</button>
             </div>
         </div>
     );
