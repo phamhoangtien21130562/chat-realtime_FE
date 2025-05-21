@@ -9,7 +9,6 @@ const SearchResult = ({ keyword = "", isInvalid = false, users = [], messages = 
             const updatedMessages = await Promise.all(
                 messages.map(async (msg) => {
                     if (senderMap[msg.senderId]) {
-                        // Đã có trong cache local
                         return {
                             ...msg,
                             senderName: senderMap[msg.senderId].name,
@@ -18,11 +17,13 @@ const SearchResult = ({ keyword = "", isInvalid = false, users = [], messages = 
                     }
 
                     try {
-                        const user = await callApi.userService.getUserById(msg.senderId);
+                        const res = await callApi.userService.getUserById(msg.senderId);
+                        const user = res.data; // ✅ Lấy data ở đây
                         senderMap[msg.senderId] = user;
+
                         return {
                             ...msg,
-                            senderName: user.name,
+                            senderName: user.name || "Không xác định",
                             avatar: user.avatar,
                         };
                     } catch (err) {
@@ -42,6 +43,7 @@ const SearchResult = ({ keyword = "", isInvalid = false, users = [], messages = 
             fetchSenders();
         }
     }, [messages]);
+
     if (isInvalid) {
         return (
             <div className="search-result">
