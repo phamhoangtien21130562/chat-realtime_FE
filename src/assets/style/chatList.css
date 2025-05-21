@@ -68,18 +68,55 @@
     border-radius: 50%;
     object-fit: cover;
 }
-.chatList .items .texts{
+/*.chatList .items .texts{*/
+/*    display: flex;*/
+/*    flex-direction: column;*/
+/*    gap: 10px;*/
+/*}*/
+/*.chatList .items .texts span{*/
+/*    font-weight: 700;*/
+/*}*/
+/*.chatList .items .texts p{*/
+/*    font-size: 14px;*/
+/*    font-weight: 300;*/
+/*    !*margin: auto;*!*/
+/*}*/
+/*.timestamp{*/
+/*    display: flex;*/
+/*}*/
+.chatList .items .content {
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    flex: 1;
+    position: relative;
 }
-.chatList .items .texts span{
-    font-weight: 500;
+
+.chatList .items .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
 }
-.chatList .items .texts p{
-    font-size: 14px;
-    font-weight: 300;
-    margin: auto;
+
+.chatList .items .name {
+    font-weight: 700;
+    color: #1a1a1a;
+    font-size: 16px;
+}
+
+.chatList .items .timestamp {
+    font-size: 13px;
+    color: #888;
+    white-space: nowrap;
+}
+
+.chatList .items .lastMessage {
+    font-size: 15px;
+    color: #555;
+    font-weight: 400;
+    margin-top: 4px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 .searchResult {
     background: white;
@@ -185,5 +222,9 @@
     font-size: 13px;
     color: #666;
     margin: 0;
+}
+.noConversation{
+    padding: 20px;
+    text-align: center;
 }
 

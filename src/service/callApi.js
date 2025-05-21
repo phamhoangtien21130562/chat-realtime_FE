@@ -23,6 +23,30 @@ const userService = {
     }
 };
 
-const callApi = { authService, userService };
+/**
+ * UC3.1:
+ * call API lấy danh sách cuộc trò chuyện theo user id*/
+const roomService={
+    getRoomsByUserId: async (userId) => {
+        try {
+            const response = await api.get(`/rooms/${userId}`);
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    }
+}
+
+const messageService={
+    getMessagesByChatId: async (chatId) => {
+        try {
+            const response = await api.get(`/messages/history?chatId=${chatId}`);
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    }
+}
+const callApi = { authService, userService, roomService, messageService};
 
 export default callApi;
