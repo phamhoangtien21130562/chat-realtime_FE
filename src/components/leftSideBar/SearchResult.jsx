@@ -65,7 +65,7 @@ const SearchResult = ({ keyword = "", isInvalid = false, users = [], messages = 
                         <div className="items" key={user.id}>
                             <img src={user.avatar || "/img/avatar.jpg"} alt="avatar" className="avatar" />
                             <div className="texts">
-                                <span>{user.name}</span>
+                                <strong>{user.name}</strong>
                                 {/*<p>{user.email}</p>*/}
                             </div>
                         </div>
@@ -81,7 +81,7 @@ const SearchResult = ({ keyword = "", isInvalid = false, users = [], messages = 
                         <div className="items" key={msg.id}>
                             <img src={msg.avatar || "/img/avatar.jpg"} alt="avatar" className="avatar" />
                             <div className="texts">
-                                <span>{msg.senderName}</span>
+                                <strong>{msg.senderName}</strong>
                                 <p>{msg.content}</p>
                             </div>
                         </div>
