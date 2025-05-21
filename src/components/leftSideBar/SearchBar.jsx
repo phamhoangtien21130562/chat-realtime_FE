@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import SearchResult from "./SearchResult";
-
+import callApi from "../service/callApi";
 const SearchBar = ({ onChange }) => {
     const [value, setValue] = useState("");
     const [showResult, setShowResult] = useState(false);
@@ -16,7 +16,8 @@ const SearchBar = ({ onChange }) => {
         if (onChange) onChange(newValue);
         if (!showResult) setShowResult(true);
     };
-
+//4.1.1 Nhấn vào thanh tìm kiếm
+//4.2.1 Nhấn vào thanh tìm kiếm
     const handleFocus = () => {
         setShowResult(true);
     };
@@ -27,8 +28,10 @@ const SearchBar = ({ onChange }) => {
         if (onChange) onChange("");
         setShowResult(false);
     };
-//4.1 Kiểm tra từ khóa hợp lệ isInvalid()
-// 4.3A1 Từ khóa không hợp lệ!
+//4.1.2 Nhập từ khóa vào thanh tìm kiếm và nhấn Enter
+//4.2.2 Nhập từ khóa vào thanh tìm kiếm và nhấn Enter
+//4.1.3 Kiểm tra từ khóa hợp lệ isInvalid()
+//4.2.3 Kiểm tra từ khóa hợp lệ isInvalid()
     const handleKeyDown = async(e) => {
 
         if (e.key === "Enter") {
@@ -37,23 +40,12 @@ const SearchBar = ({ onChange }) => {
                 setShowResult(true); // vẫn hiện box thông báo
             } else {
                 setIsInvalid(false);
-                // Thực hiện tìm kiếm nếu cần
+//4.1.4 Gửi tin nhắn tìm kiếm lên hệ thống
+//4.2.4 Gửi tin nhắn tìm kiếm lên hệ thống
                 try {
-                    const response = await fetch('http://localhost:8080/api/search', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ keyword: value.trim() }),
-                    });
-
-
-                    if (!response.ok) {
-                        throw new Error('Lỗi khi tìm kiếm');
-                    }
-
-                    const data = await response.json();
-                    // Gửi dữ liệu kết quả về cho SearchResult hiển thị
+                    const data = await callApi.searchService.searchByKeyword(value.trim());
                     setShowResult(true);
-                    setSearchResults(data.data);  // bạn cần tạo state searchResults để lưu kết quả
+                    setSearchResults(data.data);
                 } catch (error) {
                     console.error(error);
                     setSearchResults(null);
@@ -76,7 +68,6 @@ const SearchBar = ({ onChange }) => {
             document.removeEventListener("mousedown", handleClickOutside);
         };
     }, []);
-
     return (
         <div className="search" style={{position: "relative"}} ref={wrapperRef}>
             <div className="searchBar">

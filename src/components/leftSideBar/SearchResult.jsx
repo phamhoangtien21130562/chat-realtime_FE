@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 
 const SearchResult = ({ keyword = "", isInvalid = false, users = [], messages = [] }) => {
+// 4.1.3A1 Từ khóa không hợp lệ!
+// 4.2.3A1 Từ khóa không hợp lệ!
     if (isInvalid) {
         return (
             <div className="search-result">
@@ -16,6 +18,7 @@ const SearchResult = ({ keyword = "", isInvalid = false, users = [], messages = 
             <div className="search-user">
                 <div className="category">Người dùng</div>
                 <div className="items-list">
+{/*4.1.6A1.   Hệ thống hiển thị thông báo “Không tìm thấy người dùng”.*/}
                     {users.length === 0 && <p>Không tìm thấy người dùng</p>}
                     {users.map((user) => (
                         <div className="items" key={user.id}>
@@ -31,6 +34,7 @@ const SearchResult = ({ keyword = "", isInvalid = false, users = [], messages = 
             <div className="search-message">
                 <div className="category">Tin nhắn</div>
                 <div className="items-list">
+{/*//4.2.6A1.   Hệ thống hiển thị thông báo “Không tìm thấy tin nhắn”.*/}
                     {messages.length === 0 && <p>Không tìm thấy tin nhắn</p>}
                     {messages.map((msg) => (
                         <div className="items" key={msg.id}>
