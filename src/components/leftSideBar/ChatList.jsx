@@ -52,7 +52,7 @@ const ChatList = ({currentUserId, onRoomSelect}) => {
                 ) :
                 (rooms.map((room, index) => (
                 <div className="items" key={room.participantId || index}
-                     onClick={() => onRoomSelect(room.roomId)} //khi click vào thì truyền roomid vào mainchat
+                     onClick={() => onRoomSelect(room.roomId, room.participantId)} //khi click vào thì truyền roomid và recipientId vào mainchat
                 >
                     <img src={room.avatarUrl} alt="avatar" className="avatar"/>
                     <div className="content">
