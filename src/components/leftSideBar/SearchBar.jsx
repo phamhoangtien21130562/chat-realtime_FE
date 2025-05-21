@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import SearchResult from "./SearchResult";
-
+import callApi from "../service/callApi";
 const SearchBar = ({ onChange }) => {
     const [value, setValue] = useState("");
     const [showResult, setShowResult] = useState(false);
@@ -43,23 +43,9 @@ const SearchBar = ({ onChange }) => {
 //4.1.4 Gửi tin nhắn tìm kiếm lên hệ thống
 //4.2.4 Gửi tin nhắn tìm kiếm lên hệ thống
                 try {
-                    const response = await fetch('http://localhost:8080/api/search', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ keyword: value.trim() }),
-                    });
-
-
-                    if (!response.ok) {
-                        throw new Error('Lỗi khi tìm kiếm');
-                    }
-//4.1.6 nơi nhận kết quả trả về
-//4.2.6 nơi nhận kết quả trả về
-                    const data = await response.json();
-//4.1.7 Hệ thống hiển thị kết quả danh sách người dùng.
-//4.2.7 Hệ thống hiển thị kết quả danh sách tin nhắn.
+                    const data = await callApi.searchService.searchByKeyword(value.trim());
                     setShowResult(true);
-                    setSearchResults(data.data);  
+                    setSearchResults(data.data);
                 } catch (error) {
                     console.error(error);
                     setSearchResults(null);

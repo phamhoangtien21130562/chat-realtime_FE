@@ -1,6 +1,16 @@
 // src/service/callApi.js
 import api from './api';
 
+const searchService = {
+    searchByKeyword: async (keyword) => {
+        try {
+            const response = await api.post('/api/search', { keyword });
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    }
+};
 const authService = {
     login: async (email, password) => {
         try {
@@ -47,6 +57,6 @@ const messageService={
         }
     }
 }
-const callApi = { authService, userService, roomService, messageService};
+const callApi = { authService, userService, roomService, messageService,searchService,};
 
 export default callApi;
