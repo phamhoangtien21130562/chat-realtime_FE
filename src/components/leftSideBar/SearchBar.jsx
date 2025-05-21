@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import SearchResult from "./SearchResult";
-import callApi from "../service/callApi";
+import callApi from "../../service/callApi";
 const SearchBar = ({ onChange }) => {
     const [value, setValue] = useState("");
     const [showResult, setShowResult] = useState(false);
