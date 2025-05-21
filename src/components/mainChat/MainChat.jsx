@@ -145,7 +145,7 @@ const MainChat = ({avatar, name, currentUserId, roomId, recipientId}) => {
                 destination: '/app/chat',
                 body: JSON.stringify(message)
             });
-
+            setMessages(prevMessages => [...prevMessages, message]);
             // Xóa nội dung input sau khi gửi
             setMessageText("");
         }

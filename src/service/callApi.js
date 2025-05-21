@@ -29,7 +29,7 @@ const userService = {
 const roomService={
     getRoomsByUserId: async (userId) => {
         try {
-            const response = await api.get(`/rooms/${userId}`);
+            const response = await api.get(`/api/rooms/${userId}`);
             return response.data;
         } catch (error) {
             throw error;
@@ -40,7 +40,7 @@ const roomService={
 const messageService={
     getMessagesByChatId: async (chatId) => {
         try {
-            const response = await api.get(`/messages/history?chatId=${chatId}`);
+            const response = await api.get(`/api/message/history?chatId=${chatId}`);
             return response.data;
         } catch (error) {
             throw error;
