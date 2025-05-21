@@ -74,8 +74,8 @@ const SearchResult = ({ keyword = "", isInvalid = false, users = [], messages = 
                 <div className="category">Tin nhắn</div>
                 <div className="items-list">
 {/*//4.2.6A1.   Hệ thống hiển thị thông báo “Không tìm thấy tin nhắn”.*/}
-                    {messages.length === 0 && <p>Không tìm thấy tin nhắn</p>}
-                    {messages.map((msg) => (
+                    {enhancedMessages.length === 0 && <p>Không tìm thấy tin nhắn</p>}
+                    {enhancedMessages.map((msg) => (
                         <div className="items" key={msg.id}>
                             <img src={msg.avatar || "/img/avatar.jpg"} alt="avatar" className="avatar" />
                             <div className="texts">
