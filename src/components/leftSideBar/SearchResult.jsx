@@ -41,6 +41,7 @@ const SearchResult = ({ keyword = "", isInvalid = false, users = [], messages = 
                             <img src={msg.avatar || "/img/avatar.jpg"} alt="avatar" className="avatar" />
                             <div className="texts">
                                 <span>{msg.senderName}</span>
+                                <span>{msg.name}</span>
                                 <p>{msg.content}</p>
                             </div>
                         </div>
