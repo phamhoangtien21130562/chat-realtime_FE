@@ -2,11 +2,13 @@ import '../../assets/style/leftSideBar.css'
 import ChatList from "./ChatList";
 // import UserInfo from "./UserInfo";
 
-const LeftSideBar = ({ userInfoComponent }) => {
+const LeftSideBar = ({ userInfoComponent , currentUserId, onRoomSelect}) => {
     return(
         <div className='leftSideBar'>
             {userInfoComponent}
-            <ChatList/>
+            <ChatList currentUserId={currentUserId}
+                      onRoomSelect={onRoomSelect}
+            />
         </div>
     )
 }
