@@ -1,8 +1,47 @@
 import { useState, useEffect } from "react";
-
+import callApi from "../../service/callApi";
 const SearchResult = ({ keyword = "", isInvalid = false, users = [], messages = [] }) => {
-// 4.1.3A1 Từ khóa không hợp lệ!
-// 4.2.3A1 Từ khóa không hợp lệ!
+    const [enhancedMessages, setEnhancedMessages] = useState([]);
+
+    useEffect(() => {
+        const fetchSenders = async () => {
+            const senderMap = {};
+            const updatedMessages = await Promise.all(
+                messages.map(async (msg) => {
+                    if (senderMap[msg.senderId]) {
+                        // Đã có trong cache local
+                        return {
+                            ...msg,
+                            senderName: senderMap[msg.senderId].name,
+                            avatar: senderMap[msg.senderId].avatar,
+                        };
+                    }
+
+                    try {
+                        const user = await callApi.userService.getUserById(msg.senderId);
+                        senderMap[msg.senderId] = user;
+                        return {
+                            ...msg,
+                            senderName: user.name,
+                            avatar: user.avatar,
+                        };
+                    } catch (err) {
+                        console.error("Lỗi lấy thông tin sender:", err);
+                        return {
+                            ...msg,
+                            senderName: "Không xác định",
+                            avatar: null,
+                        };
+                    }
+                })
+            );
+            setEnhancedMessages(updatedMessages);
+        };
+
+        if (messages.length > 0) {
+            fetchSenders();
+        }
+    }, [messages]);
     if (isInvalid) {
         return (
             <div className="search-result">
@@ -41,7 +80,6 @@ const SearchResult = ({ keyword = "", isInvalid = false, users = [], messages = 
                             <img src={msg.avatar || "/img/avatar.jpg"} alt="avatar" className="avatar" />
                             <div className="texts">
                                 <span>{msg.senderName}</span>
-                                <span>{msg.name}</span>
                                 <p>{msg.content}</p>
                             </div>
                         </div>
