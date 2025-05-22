@@ -1,6 +1,49 @@
 import { useState, useEffect } from "react";
-
+import callApi from "../../service/callApi";
 const SearchResult = ({ keyword = "", isInvalid = false, users = [], messages = [] }) => {
+    const [enhancedMessages, setEnhancedMessages] = useState([]);
+
+    useEffect(() => {
+        const fetchSenders = async () => {
+            const senderMap = {};
+            const updatedMessages = await Promise.all(
+                messages.map(async (msg) => {
+                    if (senderMap[msg.senderId]) {
+                        return {
+                            ...msg,
+                            senderName: senderMap[msg.senderId].name,
+                            avatar: senderMap[msg.senderId].avatar,
+                        };
+                    }
+
+                    try {
+                        const res = await callApi.userService.getUserById(msg.senderId);
+                        const user = res.data; // ✅ Lấy data ở đây
+                        senderMap[msg.senderId] = user;
+
+                        return {
+                            ...msg,
+                            senderName: user.name || "Không xác định",
+                            avatar: user.avatar,
+                        };
+                    } catch (err) {
+                        console.error("Lỗi lấy thông tin sender:", err);
+                        return {
+                            ...msg,
+                            senderName: "Không xác định",
+                            avatar: null,
+                        };
+                    }
+                })
+            );
+            setEnhancedMessages(updatedMessages);
+        };
+
+        if (messages.length > 0) {
+            fetchSenders();
+        }
+    }, [messages]);
+
     if (isInvalid) {
         return (
             <div className="search-result">
@@ -16,12 +59,13 @@ const SearchResult = ({ keyword = "", isInvalid = false, users = [], messages = 
             <div className="search-user">
                 <div className="category">Người dùng</div>
                 <div className="items-list">
+{/*4.1.6A1.   Hệ thống hiển thị thông báo “Không tìm thấy người dùng”.*/}
                     {users.length === 0 && <p>Không tìm thấy người dùng</p>}
                     {users.map((user) => (
                         <div className="items" key={user.id}>
                             <img src={user.avatar || "/img/avatar.jpg"} alt="avatar" className="avatar" />
                             <div className="texts">
-                                <span>{user.name}</span>
+                                <strong>{user.name}</strong>
                                 {/*<p>{user.email}</p>*/}
                             </div>
                         </div>
@@ -31,12 +75,13 @@ const SearchResult = ({ keyword = "", isInvalid = false, users = [], messages = 
             <div className="search-message">
                 <div className="category">Tin nhắn</div>
                 <div className="items-list">
-                    {messages.length === 0 && <p>Không tìm thấy tin nhắn</p>}
-                    {messages.map((msg) => (
+{/*//4.2.6A1.   Hệ thống hiển thị thông báo “Không tìm thấy tin nhắn”.*/}
+                    {enhancedMessages.length === 0 && <p>Không tìm thấy tin nhắn</p>}
+                    {enhancedMessages.map((msg) => (
                         <div className="items" key={msg.id}>
                             <img src={msg.avatar || "/img/avatar.jpg"} alt="avatar" className="avatar" />
                             <div className="texts">
-                                <span>{msg.senderName}</span>
+                                <strong>{msg.senderName}</strong>
                                 <p>{msg.content}</p>
                             </div>
                         </div>
