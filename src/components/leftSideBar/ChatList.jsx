@@ -1,10 +1,12 @@
-import {useEffect, useState} from 'react';
+import {useEffect, useState, useRef } from 'react';
 import SearchBar from './SearchBar';
 import callApi from "../../service/callApi";
 import '../../assets/style/chatList.css'
+import { Client } from "@stomp/stompjs";
 
 const ChatList = ({currentUserId, onRoomSelect}) => {
     const [rooms, setRooms] = useState([]);
+    const stompClientRef = useRef(null);
 
     useEffect(() => {
         if (!currentUserId) return;
@@ -41,6 +43,80 @@ const ChatList = ({currentUserId, onRoomSelect}) => {
 
         fetchRooms();
     }, [currentUserId]);
+
+    // Khởi tạo kết nối WebSocket
+    useEffect(() => {
+        if (!currentUserId) return;
+
+        const stompClient = new Client({
+            brokerURL: 'wss://sorfware-message.onrender.com/ws/websocket',
+            reconnectDelay: 5000,
+            debug: (str) => console.log(str),
+        });
+
+        stompClient.onConnect = () => {
+            stompClient.subscribe(`/user/${currentUserId}/queue/rooms`, (message) => {
+                const msg = JSON.parse(message.body);
+                handleIncomingMessage(msg);
+            });
+            console.log("Connected to WebSocket in ChatList");
+        };
+
+        stompClient.onStompError = (frame) => {
+            console.error('Broker error:', frame.headers['message']);
+            console.error('Details:', frame.body);
+        };
+
+        stompClient.activate();
+        stompClientRef.current = stompClient;
+
+        return () => {
+            stompClient.deactivate();
+        };
+    }, [currentUserId]);
+
+    const handleIncomingMessage = (msg) => {
+        setRooms((prevRooms) => {
+            const index = prevRooms.findIndex(
+                (room) =>
+                    room.participantId === msg.senderId || room.participantId === msg.recipientId
+            );
+
+            const newTimestamp = msg.timestamp;
+            const newContent = msg.content;
+            const isFromSender = msg.senderId !== currentUserId;
+            const otherId = isFromSender ? msg.senderId : msg.recipientId;
+
+            if (index !== -1) {
+                const updatedRoom = {
+                    ...prevRooms[index],
+                    lastMessageContent: newContent,
+                    timestamp: newTimestamp,
+                };
+                const newRooms = [...prevRooms];
+                newRooms.splice(index, 1);
+                return [updatedRoom, ...newRooms];
+            } else {
+                callApi.userService.getUserById(otherId).then((res) => {
+                    const userData = res?.data;
+                    setRooms((roomsAfter) => [
+                        {
+                            roomId: msg.chatId || `new-${Date.now()}`,
+                            participantName: userData.name,
+                            avatarUrl: userData.avatar || '/img/avatar.jpg',
+                            lastMessageContent: msg.content,
+                            participantId: otherId,
+                            timestamp: msg.timestamp,
+                        },
+                        ...roomsAfter,
+                    ]);
+                });
+
+                return prevRooms;
+            }
+        });
+    };
+
 
     return (
         <div className="chatList">
