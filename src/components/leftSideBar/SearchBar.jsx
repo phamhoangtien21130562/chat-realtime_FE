@@ -31,7 +31,7 @@ const SearchBar = ({ onChange }) => {
     const handleKeyDown = async(e) => {
 
         if (e.key === "Enter") {
-//4.3 Kiểm tra tính hợp lệ của từ khóa (từ khóa không được rỗng hoặc chỉ chứa khoảng trắng).
+// 4.3 Kiểm tra tính hợp lệ của từ khóa (từ khóa không được rỗng hoặc chỉ chứa khoảng trắng).
             if (value.trim() === "") {
                 setIsInvalid(true);  // đánh dấu là từ khóa không hợp lệ
                 setShowResult(true); // vẫn hiện box thông báo
