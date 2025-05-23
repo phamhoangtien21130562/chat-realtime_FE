@@ -16,8 +16,7 @@ const SearchBar = ({ onChange }) => {
         if (onChange) onChange(newValue);
         if (!showResult) setShowResult(true);
     };
-//4.1.1 Nhấn vào thanh tìm kiếm
-//4.2.1 Nhấn vào thanh tìm kiếm
+
     const handleFocus = () => {
         setShowResult(true);
     };
@@ -28,21 +27,19 @@ const SearchBar = ({ onChange }) => {
         if (onChange) onChange("");
         setShowResult(false);
     };
-//4.1.2 Nhập từ khóa vào thanh tìm kiếm và nhấn Enter
-//4.2.2 Nhập từ khóa vào thanh tìm kiếm và nhấn Enter
-//4.1.3 Kiểm tra từ khóa hợp lệ isInvalid()
-//4.2.3 Kiểm tra từ khóa hợp lệ isInvalid()
+
     const handleKeyDown = async(e) => {
 
         if (e.key === "Enter") {
+//4.3 Kiểm tra tính hợp lệ của từ khóa (từ khóa không được rỗng hoặc chỉ chứa khoảng trắng).
             if (value.trim() === "") {
                 setIsInvalid(true);  // đánh dấu là từ khóa không hợp lệ
                 setShowResult(true); // vẫn hiện box thông báo
             } else {
                 setIsInvalid(false);
-//4.1.4 Gửi tin nhắn tìm kiếm lên hệ thống
-//4.2.4 Gửi tin nhắn tìm kiếm lên hệ thống
+
                 try {
+//4.4 Gửi tin nhắn tìm kiếm lên hệ thống.
                     const data = await callApi.searchService.searchByKeyword(value.trim());
                     setShowResult(true);
                     setSearchResults(data.data);
@@ -78,7 +75,9 @@ const SearchBar = ({ onChange }) => {
                     style={{color: 'black'}}
                     value={value}
                     onChange={handleChange}
+//4.1 Người dùng nhấn vào giao diện thanh tìm kiếm gần góc trái bên trên của trang.
                     onFocus={handleFocus}
+//4.2 Người dùng nhập từ khóa vào thanh tìm kiếm và nhấn Enter.
                     onKeyDown={handleKeyDown}
                 />
                 {value && (
