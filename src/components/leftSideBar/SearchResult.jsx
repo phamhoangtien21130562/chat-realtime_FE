@@ -43,7 +43,7 @@ const SearchResult = ({ keyword = "", isInvalid = false, users = [], messages = 
             fetchSenders();
         }
     }, [messages]);
-//4.3A1.   Hiển thị thông báo: ”Từ khóa không hợp lệ!”.
+// 4.3A1.   Hiển thị thông báo: ”Từ khóa không hợp lệ!”.
     if (isInvalid) {
         return (
             <div className="search-result">
@@ -53,14 +53,14 @@ const SearchResult = ({ keyword = "", isInvalid = false, users = [], messages = 
             </div>
         );
     }
-//4.8 Hệ thống hiển thị kết quả.
+// 4.8 Hệ thống hiển thị kết quả.
     return (
         <div className="search-result">
-//4.8.1 Danh sách người dùng.
+{/*4.8.1 Danh sách người dùng.*/}
             <div className="search-user">
                 <div className="category">Người dùng</div>
                 <div className="items-list">
-//4.7A1.   Hệ thống hiển thị thông báo “Không tìm thấy người dùng”.
+{/*4.7A1.   Hệ thống hiển thị thông báo “Không tìm thấy người dùng”.*/}
                     {users.length === 0 && <p>Không tìm thấy người dùng</p>}
                     {users.map((user) => (
                         <div className="items" key={user.id}>
@@ -73,11 +73,11 @@ const SearchResult = ({ keyword = "", isInvalid = false, users = [], messages = 
                     ))}
                 </div>
             </div>
-//4.8.2Danh sách tin nhắn.
+{/*4.8.2Danh sách tin nhắn.*/}
             <div className="search-message">
                 <div className="category">Tin nhắn</div>
                 <div className="items-list">
-//4.7A2.   Hệ thống hiển thị thông báo “Không tìm thấy tin nhắn”.
+{/*4.7A2.   Hệ thống hiển thị thông báo “Không tìm thấy tin nhắn”.*/}
                     {enhancedMessages.length === 0 && <p>Không tìm thấy tin nhắn</p>}
                     {enhancedMessages.map((msg) => (
                         <div className="items" key={msg.id}>
