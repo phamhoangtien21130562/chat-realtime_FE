@@ -135,7 +135,7 @@ const ChatList = ({currentUserId, onRoomSelect}) => {
 
     return (
         <div className="chatList">
-            <SearchBar onUserSelect={handleUserSelect}/>
+            <SearchBar onUserSelect={handleUserSelect} onRoomSelect={onRoomSelect}/>
             {/*3.3a: nếu không có cuộc trò truyện nào thì:
             Hệ thống hiển thị thông báo "Bạn chưa có cuộc trò chuyện nào."*/}
             {rooms.length === 0 ? (

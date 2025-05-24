@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import callApi from "../../service/callApi";
-const SearchResult = ({ keyword = "", isInvalid = false, users = [], messages = [], onUserSelect }) => {
+const SearchResult = ({ keyword = "", isInvalid = false, users = [], messages = [], onUserSelect, onRoomSelect }) => {
     const [enhancedMessages, setEnhancedMessages] = useState([]);
     const currentUserId = sessionStorage.getItem('userId');
 
@@ -82,15 +82,19 @@ const SearchResult = ({ keyword = "", isInvalid = false, users = [], messages = 
                     {enhancedMessages.length === 0 && <p>Không tìm thấy tin nhắn</p>}
                     {enhancedMessages
                         .filter((msg) => msg.recipientId === currentUserId || msg.senderId === currentUserId)
-                        .map((msg) => (
-                        <div className="items" key={msg.id}>
-                            <img src={msg.avatar || "/img/avatar.jpg"} alt="avatar" className="avatar" />
-                            <div className="texts">
-                                <strong>{msg.senderName}</strong>
-                                <p>{msg.content}</p>
-                            </div>
-                        </div>
-                    ))}
+                        .map((msg) => {
+                            const otherUserId = msg.senderId === currentUserId ? msg.recipientId : msg.senderId;
+                            return (
+                                <div className="items" key={msg.id}
+                                onClick={() => onRoomSelect && onRoomSelect(msg.chatId, otherUserId)}>
+                                    <img src={msg.avatar || "/img/avatar.jpg"} alt="avatar" className="avatar" />
+                                    <div className="texts">
+                                        <strong>{msg.senderName}</strong>
+                                        <p>{msg.content}</p>
+                                    </div>
+                                </div>
+                            )
+                        })}
                 </div>
             </div>
         </div>
