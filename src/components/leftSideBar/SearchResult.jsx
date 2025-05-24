@@ -81,11 +81,17 @@ const SearchResult = ({ keyword = "", isInvalid = false, users = [], messages = 
 {/*4.7A2.   Hệ thống hiển thị thông báo "Không tìm thấy tin nhắn".*/}
                     {enhancedMessages.length === 0 && <p>Không tìm thấy tin nhắn</p>}
                     {enhancedMessages
+                        // Lọc ra những tin nhắn mà người dùng hiện tại là người gửi hoặc người nhận
                         .filter((msg) => msg.recipientId === currentUserId || msg.senderId === currentUserId)
                         .map((msg) => {
+                            /**UC3. Thực hiện callBack để thực hiện chức năng chọn phòng chat dựa vào
+                             * tin nhắn đã được tìm kiếm -> hiển thị lịch sử chat
+                             * */
+                            // Xác định ID của người còn lại trong cuộc trò chuyện (khác với currentUserId)
                             const otherUserId = msg.senderId === currentUserId ? msg.recipientId : msg.senderId;
                             return (
                                 <div className="items" key={msg.id}
+                                    // Khi click vào 1 dòng tin nhắn, gọi hàm onRoomSelect để chọn phòng chat tương ứng
                                 onClick={() => onRoomSelect && onRoomSelect(msg.chatId, otherUserId)}>
                                     <img src={msg.avatar || "/img/avatar.jpg"} alt="avatar" className="avatar" />
                                     <div className="texts">

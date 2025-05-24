@@ -85,23 +85,6 @@ const MainChat = ({avatar, name, currentUserId, roomId, recipientId}) => {
         }
     };
 
-    // const loadMessages = async () => {
-    //     try {
-    //         // Use full URL to backend API (adjust the port if needed)
-    //         const response = await fetch('http://localhost:8080/messages');
-    //         const allMessages = await response.json();
-    //
-    //         // Only show messages between current user and selected recipient
-    //         const conversationMessages = allMessages.filter(
-    //             msg => (msg.senderId === currentUserId && msg.recipientId === recipientId) ||
-    //                   (msg.senderId === recipientId && msg.recipientId === currentUserId)
-    //         );
-    //
-    //         setMessages(conversationMessages);
-    //     } catch (error) {
-    //         console.error("Error loading messages:", error);
-    //     }
-    // };
     /**
      * Usecase 3: Lịch sử trò chuyện
      * U3.2: Hiển thị tin nhắn cũ
@@ -110,17 +93,24 @@ const MainChat = ({avatar, name, currentUserId, roomId, recipientId}) => {
      */
     const loadMessages = async () => {
         if (!roomId) {
+            // Nếu chưa chọn phòng chat thì reset danh sách tin nhắn
             setMessages([]); // reset nếu không có roomId
             console.log("Chưa chọn phòng chat");
             return;
         } else {
             try {
+                //FLOW - 3.5. Hệ thống truy xuất danh sách tin nhắn dựa trên room id từ MongoDB
                 const data = await callApi.messageService.getMessagesByChatId(roomId);
+                // Gọi API để lấy thông tin người nhận (hiển thị avatar và tên)
                 const recipientData = (await callApi.userService.getUserById(recipientId))?.data;
+                // Nếu không có avatar từ server, dùng ảnh mặc định
                 const anotherAvt = recipientData.avatar || "/img/avatar.jpg";
+                // Cập nhật thông tin người nhận lên UI
                 setName(recipientData.name)
                 setAnotherAvt(anotherAvt)
                 console.log("data người nhận:", recipientData);
+                // Cập nhật danh sách tin nhắn vào state
+                //FLOW - 3.6. Hệ thống hiển thị nội dung các tin nhắn đã gửi/nhận trong cuộc trò chuyện đó.
                 setMessages(data);
             } catch (error) {
                 console.error("Error loading messages:", error);
@@ -186,6 +176,9 @@ const MainChat = ({avatar, name, currentUserId, roomId, recipientId}) => {
 
     return (
         <div className='mainChat'>
+            {/**UC3: Tiền sự kiện khi mới đăng nhập xong thì chuyển sang trang /hompage
+             Khi đó người dùng chưa thực hiện FLOW - 3.4. Người dùng nhấn vào một cuộc trò chuyện cụ thể
+             Thì hệ thống hiển thị: Hãy chọn một cuộc trò chuyện*/}
             {roomId === null ? (
                 <p className="noConversation">Hãy chọn một cuộc trò chuyện</p>
             ) : (
@@ -204,9 +197,12 @@ const MainChat = ({avatar, name, currentUserId, roomId, recipientId}) => {
                         </div>
                     </div>
 
-                    {/* Tin nhắn */}
+                    {/** Tin nhắn
+                     FLOW -	3.6. Hệ thống hiển thị nội dung các tin nhắn đã gửi/nhận trong cuộc trò chuyện đó.*/}
                     <div className="centerChat">
                         {messages.length === 0 ? (
+                            // FLOW - 3.6a. Cuộc trò chuyện chưa có tin nhắn nào:
+                            // Hệ thống hiển thị thông báo “Hãy bắt đầu trò chuyện”
                             <p className="noConversation">Hãy bắt đầu trò chuyện</p>
                         ) : (
                             messages.map((msg, index) => {

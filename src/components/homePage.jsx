@@ -31,7 +31,7 @@ const HomePage = () => {
         <div className="App">
             <LeftSideBar userInfoComponent={<UserInfo avatar={user?.avatar} name={user?.name} />}
                          currentUserId={sessionStorage.getItem('userId')}
-                         // onRoomSelect={setSelectedRoomId} //truyền callback xuống LeftSideBar
+                         //onRoomSelect={setSelectedRoomId} //truyền callback xuống LeftSideBar
                          onRoomSelect={(roomId, recipientId) => {
                              setSelectedRoomId(roomId);
                              setSelectedRecipientId(recipientId);

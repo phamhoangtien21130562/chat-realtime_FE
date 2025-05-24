@@ -104,6 +104,8 @@ const SearchBar = ({ onChange, onUserSelect, onRoomSelect }) => {
                     users={searchResults?.users || []}
                     messages={searchResults?.messages || []}
                     onUserSelect={onUserSelect}
+                    //UC3. Thực hiện callBack để thực hiện chức năng chọn phòng chat dựa vào tin nhắn
+                    // đã được tìm kiếm -> hiển thị lịch sử chat
                     onRoomSelect={onRoomSelect}
                 />
                 </div>
