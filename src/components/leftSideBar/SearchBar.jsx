@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import SearchResult from "./SearchResult";
 import callApi from "../../service/callApi";
-const SearchBar = ({ onChange }) => {
+const SearchBar = ({ onChange, onUserSelect }) => {
     const [value, setValue] = useState("");
     const [showResult, setShowResult] = useState(false);
     const [isInvalid, setIsInvalid] = useState(false);
@@ -103,6 +103,7 @@ const SearchBar = ({ onChange }) => {
                     isInvalid={isInvalid}
                     users={searchResults?.users || []}
                     messages={searchResults?.messages || []}
+                    onUserSelect={onUserSelect}
                 />
                 </div>
             )}
