@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import callApi from "../../service/callApi";
 const SearchResult = ({ keyword = "", isInvalid = false, users = [], messages = [] }) => {
     const [enhancedMessages, setEnhancedMessages] = useState([]);
+    const currentUserId = sessionStorage.getItem('userId');
 
     useEffect(() => {
         const fetchSenders = async () => {
@@ -79,7 +80,9 @@ const SearchResult = ({ keyword = "", isInvalid = false, users = [], messages = 
                 <div className="items-list">
 {/*4.7A2.   Hệ thống hiển thị thông báo “Không tìm thấy tin nhắn”.*/}
                     {enhancedMessages.length === 0 && <p>Không tìm thấy tin nhắn</p>}
-                    {enhancedMessages.map((msg) => (
+                    {enhancedMessages
+                        .filter((msg) => msg.chatId === currentUserId || msg.senderId === currentUserId)
+                        .map((msg) => (
                         <div className="items" key={msg.id}>
                             <img src={msg.avatar || "/img/avatar.jpg"} alt="avatar" className="avatar" />
                             <div className="texts">
