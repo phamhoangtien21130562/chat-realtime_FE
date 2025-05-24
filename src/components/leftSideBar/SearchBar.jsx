@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import SearchResult from "./SearchResult";
 import callApi from "../../service/callApi";
-const SearchBar = ({ onChange, onUserSelect }) => {
+const SearchBar = ({ onChange, onUserSelect, onRoomSelect }) => {
     const [value, setValue] = useState("");
     const [showResult, setShowResult] = useState(false);
     const [isInvalid, setIsInvalid] = useState(false);
@@ -104,6 +104,9 @@ const SearchBar = ({ onChange, onUserSelect }) => {
                     users={searchResults?.users || []}
                     messages={searchResults?.messages || []}
                     onUserSelect={onUserSelect}
+                    //UC3. Thực hiện callBack để thực hiện chức năng chọn phòng chat dựa vào tin nhắn
+                    // đã được tìm kiếm -> hiển thị lịch sử chat
+                    onRoomSelect={onRoomSelect}
                 />
                 </div>
             )}
