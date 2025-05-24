@@ -117,12 +117,27 @@ const ChatList = ({currentUserId, onRoomSelect}) => {
         });
     };
 
+    const handleUserSelect = async (user) => {
+        // 1. Lấy danh sách phòng chat của currentUserId
+        const roomsData = await callApi.roomService.getRoomsByUserId(currentUserId);
+        // 2. Tìm phòng với user.id
+        const room = roomsData.find(r => r.recipientId === user.id || r.senderId === user.id);
+        let chatId;
+        if (room) {
+            chatId = room.chatId;
+        } else {
+            // Nếu chưa có phòng, tự tạo chatId theo chuẩn backend
+            chatId = `${currentUserId}_${user.id}`;
+            // Khi gửi tin nhắn đầu tiên, backend sẽ tạo phòng này
+        }
+        onRoomSelect(chatId, user.id);
+    };
 
     return (
         <div className="chatList">
-            <SearchBar/>
+            <SearchBar onUserSelect={handleUserSelect}/>
             {/*3.3a: nếu không có cuộc trò truyện nào thì:
-            Hệ thống hiển thị thông báo “Bạn chưa có cuộc trò chuyện nào.”*/}
+            Hệ thống hiển thị thông báo "Bạn chưa có cuộc trò chuyện nào."*/}
             {rooms.length === 0 ? (
                 <p className="noConversation">Bạn chưa có cuộc trò chuyện nào</p>
                 ) :

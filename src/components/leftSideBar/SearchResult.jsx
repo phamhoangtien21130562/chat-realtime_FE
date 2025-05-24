@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import callApi from "../../service/callApi";
-const SearchResult = ({ keyword = "", isInvalid = false, users = [], messages = [] }) => {
+const SearchResult = ({ keyword = "", isInvalid = false, users = [], messages = [], onUserSelect }) => {
     const [enhancedMessages, setEnhancedMessages] = useState([]);
     const currentUserId = sessionStorage.getItem('userId');
 
@@ -44,7 +44,7 @@ const SearchResult = ({ keyword = "", isInvalid = false, users = [], messages = 
             fetchSenders();
         }
     }, [messages]);
-// 4.3A1.   Hiển thị thông báo: ”Từ khóa không hợp lệ!”.
+// 4.3A1.   Hiển thị thông báo: "Từ khóa không hợp lệ!".
     if (isInvalid) {
         return (
             <div className="search-result">
@@ -61,10 +61,10 @@ const SearchResult = ({ keyword = "", isInvalid = false, users = [], messages = 
             <div className="search-user">
                 <div className="category">Người dùng</div>
                 <div className="items-list">
-{/*4.7A1.   Hệ thống hiển thị thông báo “Không tìm thấy người dùng”.*/}
+{/*4.7A1.   Hệ thống hiển thị thông báo "Không tìm thấy người dùng".*/}
                     {users.length === 0 && <p>Không tìm thấy người dùng</p>}
                     {users.map((user) => (
-                        <div className="items" key={user.id}>
+                        <div className="items" key={user.id} onClick={() => onUserSelect && onUserSelect(user)}>
                             <img src={user.avatar || "/img/avatar.jpg"} alt="avatar" className="avatar" />
                             <div className="texts">
                                 <strong>{user.name}</strong>
@@ -78,7 +78,7 @@ const SearchResult = ({ keyword = "", isInvalid = false, users = [], messages = 
             <div className="search-message">
                 <div className="category">Tin nhắn</div>
                 <div className="items-list">
-{/*4.7A2.   Hệ thống hiển thị thông báo “Không tìm thấy tin nhắn”.*/}
+{/*4.7A2.   Hệ thống hiển thị thông báo "Không tìm thấy tin nhắn".*/}
                     {enhancedMessages.length === 0 && <p>Không tìm thấy tin nhắn</p>}
                     {enhancedMessages
                         .filter((msg) => msg.recipientId === currentUserId || msg.senderId === currentUserId)

@@ -44,7 +44,15 @@ const roomService={
         } catch (error) {
             throw error;
         }
-    }
+    },
+    createRoom: async (senderId, recipientId) => {
+        try {
+            const response = await api.post('/api/rooms/getOrCreate', { senderId, recipientId });
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    },
 }
 
 const messageService={
